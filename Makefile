@@ -1,5 +1,5 @@
-CXX=g++-14
-CXXFLAGS=-std=c++2b -Werror -Wall -Wextra -fsanitize=address
+CXX=g++-13
+CXXFLAGS=-std=c++2b -Werror -Wall -Wextra -Wpedantic 
 TARGET=main
 
 all: $(TARGET)
