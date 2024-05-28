@@ -43,30 +43,25 @@ private:
   {
     T key;
     int degree;
-    std::vector<Node *> children;
-    Node(T key) : key(key), degree(0) {}
+    Node *sibling;
+    Node *child;
+    Node(T key) : key(key), degree(0), sibling(nullptr), child(nullptr) {}
     ~Node()
     {
-      std::for_each(children.begin(), children.end(), [](Node *child)
-                    { delete child; });
-      children.clear();
+      delete sibling;
+      delete child;
     }
   };
 
-public:
-  MergeableHeap() : min(nullptr) {}
+private:
+  MergeableHeap(T key) : min(new Node(key)), head(min), tail(min), size(1) {}
 
-  MergeableHeap(T key) : min(new Node(key))
-  {
-    roots.push_back(min);
-  }
+public:
+  MergeableHeap() : min(nullptr), head(nullptr), tail(nullptr), size(0) {}
 
   ~MergeableHeap()
   {
-    std::for_each(roots.begin(), roots.end(), [](Node *root)
-                  { delete root; });
-    roots.clear();
-    min = nullptr;
+    delete head;
   }
 
   MergeableHeap(const MergeableHeap &) = delete;
@@ -76,8 +71,23 @@ public:
 
   void insert(T key)
   {
-    MergeableHeap temp(key);
-    merge(temp);
+    Node *temp = new Node(key);
+    ++size;
+
+    if (head != nullptr)
+    {
+      temp->sibling = head;
+    }
+    else
+    {
+      tail = temp;
+    }
+    head = temp;
+
+    if (min == nullptr || key < min->key)
+    {
+      min = temp;
+    }
   }
 
   std::optional<T> minimum()
@@ -91,90 +101,214 @@ public:
 
   std::optional<T> extract_min()
   {
-    Node *min_node = min;
+    Node *min_node = remove_min();
     if (min_node == nullptr)
     {
       return std::nullopt;
     }
-    roots.erase(std::remove(roots.begin(), roots.end(), min_node), roots.end());
-    MergeableHeap temp{};
-    temp.roots = min_node->children;
-    merge(temp);
-    update_min();
-    return min_node->key;
+
+    if (min_node->child != nullptr)
+    {
+      // concatenate the children of the min node to the root list
+      Node *child = min_node->child;
+      Node *last_child = nullptr;
+
+      while (child)
+      {
+        last_child = child;
+        child = child->sibling;
+      }
+
+      if (head != nullptr)
+      {
+        last_child->sibling = head;
+      }
+      else
+      {
+        tail = last_child;
+      }
+
+      head = min_node->child;
+    }
+
+    consolidate();
+
+    if (min == min_node)
+    {
+      update_min();
+    }
+
+    T key = min_node->key;
+    min_node->child = nullptr;
+    min_node->sibling = nullptr;
+    delete min_node;
+    return key;
   }
 
   void merge(MergeableHeap<T> &other)
   {
-    roots.insert(roots.end(), other.roots.begin(), other.roots.end());
-    update_min();
-    other.roots.clear();
+    if (min == nullptr || (other.min != nullptr && other.min->key < min->key))
+    {
+      min = other.min;
+    }
+
+    if (head == nullptr)
+    {
+      head = other.head;
+      tail = other.tail;
+    }
+    else if (other.head != nullptr)
+    {
+      tail->sibling = other.head;
+      tail = other.tail;
+    }
+
+    size += other.size;
+
+    other.head = nullptr;
+    other.tail = nullptr;
+    other.size = 0;
   }
 
 private:
   Node *min;
-  std::vector<Node *> roots;
+  Node *head;
+  Node *tail;
+  size_t size;
 
   void update_min()
   {
-    min = nullptr;
-    if (!roots.empty())
+    min = head;
+    if (min == nullptr)
     {
-      min = *std::min_element(roots.begin(), roots.end(),
-                              [](const Node *a, const Node *b)
-                              { return a->key < b->key; });
+      return;
+    }
+
+    Node *curr = head->sibling;
+    while (curr != nullptr)
+    {
+      if (curr->key < min->key)
+      {
+        min = curr;
+      }
+      curr = curr->sibling;
     }
   }
 
-  void link(Node *tree1, Node *tree2)
+  Node *remove_min()
   {
-    if (tree1->value > tree2->value)
+    if (head == nullptr)
     {
-      swap(tree1, tree2);
+      return nullptr;
     }
-    tree1->children.push_back(tree2);
+
+    Node *curr = head;
+    Node *prev = curr;
+    Node *min_node = head;
+    Node *prev_min = nullptr;
+    curr = curr->sibling;
+    while (curr != nullptr)
+    {
+      if (curr->key < min_node->key)
+      {
+        min_node = curr;
+        prev_min = prev;
+      }
+      prev = curr;
+      curr = curr->sibling;
+    }
+
+    if (min_node == head)
+    {
+      head = head->sibling;
+    }
+    else
+    {
+      prev_min->sibling = min_node->sibling;
+    }
+    if (min_node == tail)
+    {
+      tail = prev_min;
+    }
+
+    --size;
+    return min_node;
+  }
+
+  Node *link(Node *tree1, Node *tree2)
+  {
+    if (tree1->key > tree2->key)
+    {
+      std::swap(tree1, tree2);
+    }
+    tree2->sibling = tree1->child;
+    tree1->child = tree2;
     tree1->degree += 1;
+
+    return tree1;
+  }
+
+  std::vector<std::vector<Node *>> count_sort()
+  {
+    size_t max_degree = std::ceil(std::log2(size)) + 1;
+    std::vector<std::vector<Node *>> count(max_degree);
+
+    Node *curr = head;
+    while (curr != nullptr)
+    {
+      Node *next = curr->sibling;
+      curr->sibling = nullptr;
+      int degree = curr->degree;
+      count[degree].push_back(curr);
+      curr = next;
+    }
+
+    return count;
   }
 
   void consolidate()
   {
-    int max_degree = static_cast<int>(std::floor(std::log2(roots.size()))) + 1;
-    std::vector<Node *> degree_to_tree(max_degree + 1, nullptr);
-
-    while (!roots.empty())
+    if (head == nullptr)
     {
-      Node *current = roots[0];
-      roots.erase(roots.begin());
-      int degree = current->degree;
-      while (degree_to_tree[degree] != nullptr)
+      return;
+    }
+
+    std::vector<std::vector<Node *>> count = count_sort();
+
+    for (size_t i = 0; i < count.size(); ++i)
+    {
+      auto &bucket = count[i];
+      if (bucket.size() <= 1)
       {
-        Node *other = degree_to_tree[degree];
-        degree_to_tree[degree] = nullptr;
-        if (current->value < other->value)
+        continue;
+      }
+      while (bucket.size() > 1)
+      {
+        Node *tree1 = bucket.back();
+        bucket.pop_back();
+        Node *tree2 = bucket.back();
+        bucket.pop_back();
+        Node *new_tree = link(tree1, tree2);
+        count[i + 1].push_back(new_tree);
+      }
+    }
+
+    head = nullptr;
+    tail = nullptr;
+    for (size_t i = 0; i < count.size(); ++i)
+    {
+      if (!count[i].empty())
+      {
+        Node *tree = count[i].front();
+        if (head == nullptr)
         {
-          link(current, other);
+          head = tree;
         }
         else
         {
-          link(other, current);
-          current = other;
+          tail->sibling = tree;
         }
-        ++degree;
-      }
-      degree_to_tree[degree] = current;
-    }
-
-    min = nullptr;
-    roots.clear();
-    for (Node *tree : degree_to_tree)
-    {
-      if (tree != nullptr)
-      {
-        roots.push_back(tree);
-        if (min == nullptr || tree->value < min->value)
-        {
-          min = tree;
-        }
+        tail = tree;
       }
     }
   }
