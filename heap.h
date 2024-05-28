@@ -265,26 +265,26 @@ public:
 
     if (min_node->child != nullptr)
     {
-      // concatenate the children of the min node to the root list
-      Node *child = min_node->child;
+      // concatenate the children of the min node to the end of the root list
+      Node *curr = min_node->child;
+      Node *first_child = curr;
       Node *last_child = nullptr;
 
-      while (child)
+      while (curr)
       {
-        last_child = child;
-        child = child->sibling;
+        last_child = curr;
+        curr = curr->sibling;
       }
 
-      if (head != nullptr)
+      if (head == nullptr)
       {
-        last_child->sibling = head;
+        head = first_child;
       }
       else
       {
-        tail = last_child;
+        tail->sibling = first_child;
       }
-
-      head = min_node->child;
+      tail = last_child;
     }
 
     consolidate(); // O(log n) amortized
@@ -294,10 +294,12 @@ public:
       update_min(); // O(log n)
     }
 
-    T key = std::move(min_node->key);
+    T key = std::move(min_node->key); // extract the key before deleting the node
+
     min_node->child = nullptr;
     min_node->sibling = nullptr;
     delete min_node;
+
     return key;
   }
 
@@ -401,7 +403,7 @@ private:
     Node *min_node = head;
     Node *prev_min = nullptr;
     curr = curr->sibling;
-    while (curr != nullptr)
+    while (curr != nullptr) // find the minimum node
     {
       if (curr->key < min_node->key)
       {
@@ -475,8 +477,7 @@ private:
     size_t max_degree = std::ceil(std::log2(size)) + 1; // O(1)
     std::vector<std::vector<Node *>> count(max_degree);
 
-    Node *curr = head;
-    while (curr != nullptr)
+    for (Node *curr = head; curr != nullptr;)
     {
       Node *next = curr->sibling;
       curr->sibling = nullptr;
@@ -520,7 +521,7 @@ private:
       {
         continue;
       }
-      while (bucket.size() > 1)
+      while (bucket.size() > 1) // link trees with the same degree
       {
         Node *tree1 = bucket.back();
         bucket.pop_back();
@@ -535,6 +536,7 @@ private:
     tail = nullptr;
     for (size_t i = 0; i < count.size(); ++i)
     {
+      // concatenate the trees back to the root list
       if (!count[i].empty())
       {
         Node *tree = count[i].front();
