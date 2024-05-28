@@ -90,7 +90,7 @@ public:
     }
   }
 
-  constexpr std::optional<std::reference_wrapper<const T>> minimum()
+  constexpr std::optional<std::reference_wrapper<const T>> minimum() const
   {
     if (min == nullptr)
     {
@@ -235,7 +235,7 @@ private:
     return min_node;
   }
 
-  constexpr Node *link(Node *tree1, Node *tree2)
+  constexpr Node *link(Node *tree1, Node *tree2) const
   {
     if (tree1->key > tree2->key)
     {
