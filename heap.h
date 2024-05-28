@@ -45,8 +45,8 @@ private:
     int degree;
     Node *sibling;
     Node *child;
-    Node(T key) : key(std::move(key)), degree(0), sibling(nullptr), child(nullptr) {}
-    ~Node()
+    constexpr Node(T key) : key(std::move(key)), degree(0), sibling(nullptr), child(nullptr) {}
+    constexpr ~Node()
     {
       delete sibling;
       delete child;
@@ -54,22 +54,22 @@ private:
   };
 
 private:
-  MergeableHeap(T key) : min(new Node(std::move(key))), head(min), tail(min), size(1) {}
+  constexpr MergeableHeap(T key) : min(new Node(std::move(key))), head(min), tail(min), size(1) {}
 
 public:
-  MergeableHeap() : min(nullptr), head(nullptr), tail(nullptr), size(0) {}
+  constexpr MergeableHeap() : min(nullptr), head(nullptr), tail(nullptr), size(0) {}
 
-  ~MergeableHeap()
+  constexpr ~MergeableHeap()
   {
     delete head;
   }
 
-  MergeableHeap(const MergeableHeap &) = delete;
-  MergeableHeap &operator=(const MergeableHeap &) = delete;
-  MergeableHeap(MergeableHeap &&) = delete;
-  MergeableHeap &operator=(MergeableHeap &&) = delete;
+  constexpr MergeableHeap(const MergeableHeap &) = delete;
+  constexpr MergeableHeap &operator=(const MergeableHeap &) = delete;
+  constexpr MergeableHeap(MergeableHeap &&) = delete;
+  constexpr MergeableHeap &operator=(MergeableHeap &&) = delete;
 
-  void insert(T key)
+  constexpr void insert(T key)
   {
     Node *temp = new Node(std::move(key));
     ++size;
@@ -90,7 +90,7 @@ public:
     }
   }
 
-  std::optional<std::reference_wrapper<const T>> minimum()
+  constexpr std::optional<std::reference_wrapper<const T>> minimum()
   {
     if (min == nullptr)
     {
@@ -99,7 +99,7 @@ public:
     return std::cref(min->key);
   }
 
-  std::optional<T> extract_min()
+  constexpr std::optional<T> extract_min()
   {
     Node *min_node = remove_min();
     if (min_node == nullptr)
@@ -145,7 +145,7 @@ public:
     return key;
   }
 
-  void merge(MergeableHeap<T> &other)
+  constexpr void merge(MergeableHeap<T> &other)
   {
     if (min == nullptr || (other.min != nullptr && other.min->key < min->key))
     {
@@ -176,7 +176,7 @@ private:
   Node *tail;
   size_t size;
 
-  void update_min()
+  constexpr void update_min()
   {
     min = head;
     if (min == nullptr)
@@ -195,7 +195,7 @@ private:
     }
   }
 
-  Node *remove_min()
+  constexpr Node *remove_min()
   {
     if (head == nullptr)
     {
@@ -235,7 +235,7 @@ private:
     return min_node;
   }
 
-  Node *link(Node *tree1, Node *tree2)
+  constexpr Node *link(Node *tree1, Node *tree2)
   {
     if (tree1->key > tree2->key)
     {
@@ -248,7 +248,7 @@ private:
     return tree1;
   }
 
-  std::vector<std::vector<Node *>> count_sort()
+  constexpr std::vector<std::vector<Node *>> count_sort()
   {
     size_t max_degree = std::ceil(std::log2(size)) + 1;
     std::vector<std::vector<Node *>> count(max_degree);
@@ -266,7 +266,7 @@ private:
     return count;
   }
 
-  void consolidate()
+  constexpr void consolidate()
   {
     if (head == nullptr)
     {
