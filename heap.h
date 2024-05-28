@@ -45,7 +45,7 @@ private:
     int degree;
     Node *sibling;
     Node *child;
-    Node(T key) : key(key), degree(0), sibling(nullptr), child(nullptr) {}
+    Node(T key) : key(std::move(key)), degree(0), sibling(nullptr), child(nullptr) {}
     ~Node()
     {
       delete sibling;
@@ -54,7 +54,7 @@ private:
   };
 
 private:
-  MergeableHeap(T key) : min(new Node(key)), head(min), tail(min), size(1) {}
+  MergeableHeap(T key) : min(new Node(std::move(key))), head(min), tail(min), size(1) {}
 
 public:
   MergeableHeap() : min(nullptr), head(nullptr), tail(nullptr), size(0) {}
@@ -71,7 +71,7 @@ public:
 
   void insert(T key)
   {
-    Node *temp = new Node(key);
+    Node *temp = new Node(std::move(key));
     ++size;
 
     if (head != nullptr)
@@ -90,13 +90,13 @@ public:
     }
   }
 
-  std::optional<T> minimum()
+  std::optional<std::reference_wrapper<const T>> minimum()
   {
     if (min == nullptr)
     {
       return std::nullopt;
     }
-    return min->key;
+    return std::cref(min->key);
   }
 
   std::optional<T> extract_min()
@@ -138,7 +138,7 @@ public:
       update_min();
     }
 
-    T key = min_node->key;
+    T key = std::move(min_node->key);
     min_node->child = nullptr;
     min_node->sibling = nullptr;
     delete min_node;
