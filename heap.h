@@ -192,9 +192,7 @@ public:
   /**
    * @brief Inserts a key into the heap.
    *
-   * This method inserts a new key into the heap. The key is moved into a new node,
-   * which is inserted at the head of the root list. If the key is smaller than the
-   * current minimum, the new node becomes the new minimum.
+   * This method inserts a new key into the heap and updates the minimum accordingly.
    *
    * The time complexity of this operation is O(1), because it only involves creating
    * a new node and updating the head and minimum pointers. The heap is not consolidated
@@ -205,22 +203,20 @@ public:
    */
   constexpr void insert(T key)
   {
-    Node *temp = new Node(std::move(key));
-    ++size;
+    Node *node = new Node(std::move(key));
 
-    if (head != nullptr)
+    if (++size == 1) // the heap was empty
     {
-      temp->sibling = head;
+      head = tail = min = node;
+      return;
     }
-    else
-    {
-      tail = temp;
-    }
-    head = temp;
 
-    if (min == nullptr || key < min->key)
+    tail->sibling = node; // concatenate node to the end of the root list
+    tail = node;          // update the tail pointer
+
+    if (key < min->key) // update the minimum if needed
     {
-      min = temp;
+      min = node;
     }
   }
 
