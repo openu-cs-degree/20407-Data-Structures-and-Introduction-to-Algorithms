@@ -1,11 +1,15 @@
 #include <gtest/gtest.h>
-#include "heap.h"
+#include "sorted.h"
+#include "unsorted.h"
+#include "lazy.h"
 
 // g++ -std=c++2b -o test test.cc -lgtest -lpthread
 
+using Heap = SortedLinkedHeap<int>;
+
 TEST(MergeableHeapTest, Insert)
 {
-  MergeableHeap<int> h{};
+  Heap h{};
   h.insert(10);
   h.insert(5);
   h.insert(15);
@@ -14,7 +18,7 @@ TEST(MergeableHeapTest, Insert)
 
 TEST(MergeableHeapTest, ExtractMin)
 {
-  MergeableHeap<int> h{};
+  Heap h{};
   h.insert(10);
   h.insert(5);
   h.insert(15);
@@ -26,10 +30,10 @@ TEST(MergeableHeapTest, ExtractMin)
 
 TEST(MergeableHeapTest, Merge)
 {
-  MergeableHeap<int> h1{};
+  Heap h1{};
   h1.insert(10);
   h1.insert(5);
-  MergeableHeap<int> h2{};
+  Heap h2{};
   h2.insert(15);
   h2.insert(20);
   h1.merge(h2);
@@ -43,14 +47,14 @@ TEST(MergeableHeapTest, Merge)
 
 TEST(MergeableHeapTest, EmptyHeap)
 {
-  MergeableHeap<int> h{};
+  Heap h{};
   EXPECT_EQ(h.minimum(), std::nullopt);
   EXPECT_EQ(h.extract_min(), std::nullopt);
 }
 
 TEST(MergeableHeapTest, LargeHeap)
 {
-  MergeableHeap<int> h{};
+  Heap h{};
   for (int i = 1000; i > 0; --i)
   {
     h.insert(i);
@@ -64,8 +68,8 @@ TEST(MergeableHeapTest, LargeHeap)
 
 TEST(MergeableHeapTest, MergeEmpty)
 {
-  MergeableHeap<int> h1{};
-  MergeableHeap<int> h2{};
+  Heap h1{};
+  Heap h2{};
   h1.merge(h2);
   EXPECT_EQ(h1.minimum(), std::nullopt);
   EXPECT_EQ(h1.extract_min(), std::nullopt);
@@ -73,7 +77,7 @@ TEST(MergeableHeapTest, MergeEmpty)
 
 TEST(MergeableHeapTest, ComplexTest)
 {
-  MergeableHeap<int> h1{};
+  Heap h1{};
   h1.insert(10);
   h1.insert(5);
   h1.insert(15);
@@ -88,7 +92,7 @@ TEST(MergeableHeapTest, ComplexTest)
   EXPECT_EQ(h1.extract_min(), 5);
   EXPECT_EQ(h1.extract_min(), 10);
 
-  MergeableHeap<int> h2{};
+  Heap h2{};
   h2.insert(1);
   h2.insert(2);
   h2.insert(3);
