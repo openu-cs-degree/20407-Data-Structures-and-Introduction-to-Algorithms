@@ -1,58 +1,20 @@
-/**
-  @file heap.h
-  @author Yehonatan Simian
-  @date May 2024
+#ifndef LAZY_BINOMIAL_HEAP_H
+#define LAZY_BINOMIAL_HEAP_H
 
-  +-----------------------------------------------------------------------------------+
-  |                        20407 - Data Structures - Maman 13                         |
-  |                                                                                   |
-  |                 "One must imagine Sisyphus happy." - Albert Camus                 |
-  +-----------------------------------------------------------------------------------+
-
-  @section DESCRIPTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  This file contains the implementation of a mergeable heap data structure, which is a
-  type of heap that supports the following operations:
-  1. MAKE-HEAP creates a new (empty) heap.
-  2. INSERT inserts a new element into the heap.
-  3. MINIMUM returns the element with the minimum key in the heap.
-  4. EXTRACT-MIN removes and returns the element with the minimum key in the heap.
-  5. UNION merges two heaps into a single heap.
-
-  The implementation is based on the Binomial Heap data structure:
-  https://en.wikipedia.org/wiki/Binomial_heap
-  Note that unlike the Binomial Heap in the link above, this implementation does not
-  support the DECREASE-KEY operation. In addition, the implementation is optimized such
-  that each operation runs in O(1) time complexity except for the EXTRACT-MIN operation
-  which runs in an amortized time complexity of O(log n).
-
-  @note The implementation is constexpr-friendly.
-  @note The implementation does not handle memory allocation failures for simplicity.
-
-  @section COMPILATION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  To compile this project, I have used the following command:
-
-  g++ -std=c++23 -Wall -Wextra -Werror -Wpedantic -o main main.cpp
-
-  @note The mergeable heap is implemented using C++23, and was tested using gcc 13.1.0.
-
-  @copyright All rights reserved (c) Yehonatan Simian 2024 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
+#include "mergeable_heap.h"
 
 #include <vector>
 #include <algorithm>
 #include <optional>
 #include <cmath>
+#include <queue>
 
 /**
- * @class MergeableHeap
- * @brief A mergeable heap data structure.
+ * @class LazyBinomialHeap
  *
- * This class represents a mergeable heap data structure. It provides methods for
- * inserting elements, merging heaps, and finding the minimum element.
+ * @brief A fast mergeable heap data structure implementation.
  *
- * @details The mergeable heap is implemented using the binomial heap data structure.
+ * @details This mergeable heap is implemented using the binomial heap data structure.
  * A binomial heap is a collection of binomial trees, where each binomial tree is a
  * heap-ordered tree. A binomial tree of order k is a tree with 2^k nodes, where each
  * node has a key and a pointer to its parent and its leftmost child. The binomial heap
@@ -68,7 +30,7 @@
  * moved into the heap in the insert method.
  */
 template <typename T>
-class MergeableHeap
+class LazyBinomialHeap : public MergeableHeap<T>
 {
 private:
   /**
@@ -123,7 +85,7 @@ private:
    *
    * @param key The key to store in the heap. This key is moved into the heap.
    */
-  constexpr MergeableHeap(T key) : min(new Node(std::move(key))), head(min), tail(min), size(1) {}
+  constexpr LazyBinomialHeap(T key) : min(new Node(std::move(key))), head(min), tail(min), size(1) {}
 
 public:
   /**
@@ -134,7 +96,7 @@ public:
    *
    * The time complexity of this operation is O(1).
    */
-  constexpr MergeableHeap() : min(nullptr), head(nullptr), tail(nullptr), size(0) {}
+  constexpr LazyBinomialHeap() : min(nullptr), head(nullptr), tail(nullptr), size(0) {}
 
   /**
    * @brief Destroys the heap.
@@ -144,50 +106,10 @@ public:
    *
    * The time complexity of this operation is O(n), where n is the number of nodes in the heap.
    */
-  constexpr ~MergeableHeap()
+  constexpr ~LazyBinomialHeap()
   {
     delete head;
   }
-
-  /**
-   * @brief Copy constructor (deleted).
-   *
-   * This constructor is deleted because `MergeableHeap` objects should not be copied.
-   * This is because they own their nodes, so copying a `MergeableHeap` would result in
-   * multiple `MergeableHeap` objects owning the same nodes, which could lead to
-   * double deletion.
-   */
-  constexpr MergeableHeap(const MergeableHeap &) = delete;
-
-  /**
-   * @brief Copy assignment operator (deleted).
-   *
-   * This operator is deleted because `MergeableHeap` objects should not be copied.
-   * This is because they own their nodes, so copying a `MergeableHeap` would result in
-   * multiple `MergeableHeap` objects owning the same nodes, which could lead to
-   * double deletion.
-   */
-  constexpr MergeableHeap &operator=(const MergeableHeap &) = delete;
-
-  /**
-   * @brief Move constructor (deleted).
-   *
-   * This constructor is deleted because `MergeableHeap` objects should not be moved.
-   * This is because they own their nodes, so moving a `MergeableHeap` would result in
-   * the moved-from `MergeableHeap` still owning the nodes, which could lead to
-   * double deletion.
-   */
-  constexpr MergeableHeap(MergeableHeap &&) = delete;
-
-  /**
-   * @brief Move assignment operator (deleted).
-   *
-   * This operator is deleted because `MergeableHeap` objects should not be moved.
-   * This is because they own their nodes, so moving a `MergeableHeap` would result in
-   * the moved-from `MergeableHeap` still owning the nodes, which could lead to
-   * double deletion.
-   */
-  constexpr MergeableHeap &operator=(MergeableHeap &&) = delete;
 
   /**
    * @brief Inserts a key into the heap.
@@ -201,7 +123,7 @@ public:
    *
    * @param key The key to insert. This key is moved into the heap.
    */
-  constexpr void insert(T key)
+  constexpr void insert(T key) override
   {
     Node *node = new Node(std::move(key));
 
@@ -232,7 +154,7 @@ public:
    *
    * @return A reference to the minimum key, or `std::nullopt` if the heap is empty.
    */
-  constexpr std::optional<std::reference_wrapper<const T>> minimum() const
+  constexpr std::optional<std::reference_wrapper<const T>> minimum() const override
   {
     if (min == nullptr)
     {
@@ -255,7 +177,7 @@ public:
    *
    * @return The minimum key, or `std::nullopt` if the heap is empty.
    */
-  constexpr std::optional<T> extract_min()
+  constexpr std::optional<T> extract_min() override
   {
     Node *min_node = remove_min(); // O(log n)
     if (min_node == nullptr)
@@ -289,10 +211,7 @@ public:
 
     consolidate(); // O(log n) amortized
 
-    if (min == min_node)
-    {
-      update_min(); // O(log n)
-    }
+    update_min(); // O(log n)
 
     T key = std::move(min_node->key); // extract the key before deleting the node
 
@@ -319,29 +238,66 @@ public:
    *
    * @param other The heap to merge into this heap.
    */
-  constexpr void merge(MergeableHeap<T> &other)
+  constexpr void merge(MergeableHeap<T> &other) override
   {
-    if (min == nullptr || (other.min != nullptr && other.min->key < min->key))
+    LazyBinomialHeap<T> &other_heap = static_cast<LazyBinomialHeap<T> &>(other);
+
+    if (min == nullptr || (other_heap.min != nullptr && other_heap.min->key < min->key))
     {
-      min = other.min;
+      min = other_heap.min;
     }
 
     if (head == nullptr)
     {
-      head = other.head;
-      tail = other.tail;
+      head = other_heap.head;
+      tail = other_heap.tail;
     }
-    else if (other.head != nullptr)
+    else if (other_heap.head != nullptr)
     {
-      tail->sibling = other.head;
-      tail = other.tail;
+      tail->sibling = other_heap.head;
+      tail = other_heap.tail;
     }
 
-    size += other.size;
+    size += other_heap.size;
 
-    other.head = nullptr;
-    other.tail = nullptr;
-    other.size = 0;
+    other_heap.head = nullptr;
+    other_heap.tail = nullptr;
+    other_heap.size = 0;
+  }
+
+  /**
+   * @brief Prints the heap.
+   *
+   * This method prints the keys of the nodes in the heap using a breadth-first traversal.
+   *
+   * The time complexity of this operation is O(n), where n is the number of nodes in the heap.
+   */
+  void print() const
+  {
+    std::queue<Node *> q;
+    if (head != nullptr)
+    {
+      q.push(head);
+    }
+
+    while (!q.empty())
+    {
+      Node *curr = q.front();
+      q.pop();
+      std::cout << curr->key << ", ";
+      if (curr->child != nullptr)
+      {
+        Node *child = curr->child;
+        q.push(child);
+        while (child->sibling != nullptr)
+        {
+          child = child->sibling;
+          q.push(child);
+        }
+      }
+    }
+
+    std::cout << "\b\b.\n";
   }
 
 private:
@@ -552,4 +508,6 @@ private:
       }
     }
   }
-}; // class MergeableHeap
+}; // class LazyBinomialHeap
+
+#endif // LAZY_BINOMIAL_HEAP_H
