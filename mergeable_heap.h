@@ -1,44 +1,24 @@
-/**
-  @file mergeable_heap.h
-  @author Yehonatan Simian
-  @date May 2024
-
-  +-----------------------------------------------------------------------------------+
-  |                        20407 - Data Structures - Maman 13                         |
-  |                                                                                   |
-  |                 "One must imagine Sisyphus happy." - Albert Camus                 |
-  +-----------------------------------------------------------------------------------+
-
-  @section DESCRIPTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  This file contains the interface of a mergeable heap data structure, which is a
-  type of heap that supports the following operations:
-  1. MAKE-HEAP creates a new (empty) heap.
-  2. INSERT inserts a new element into the heap.
-  3. MINIMUM returns the element with the minimum key in the heap.
-  4. EXTRACT-MIN removes and returns the element with the minimum key in the heap.
-  5. UNION merges two heaps into a single heap.
-
-  @note The interface is constexpr-friendly.
-  @note My implementation will not handle memory allocation failures for simplicity.
-
-  @section COMPILATION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  To compile this project, I have used the following command:
-
-  g++ -std=c++23 -Wall -Wextra -Werror -Wpedantic -o main main.cpp
-
-  @note The mergeable heap is implemented using C++23, and was tested using gcc 13.1.0.
-
-  @copyright All rights reserved (c) Yehonatan Simian 2024 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
 #ifndef MERGEABLE_HEAP_H
 #define MERGEABLE_HEAP_H
 
 #include <optional>
 #include <iostream>
 
+/**
+ * @class MergeableHeap
+ *
+ * @brief A constexpr-friendly interface for a mergeable heap data structure.
+ *
+ * @details A mergeable heap is a type of heap that supports the following operations:
+ * 1. MAKE-HEAP creates a new (empty) heap.
+ * 2. INSERT inserts a new element into the heap.
+ * 3. MINIMUM returns the element with the minimum key in the heap.
+ * 4. EXTRACT-MIN removes and returns the element with the minimum key in the heap.
+ * 5. UNION merges two heaps into a single heap.
+ *
+ * @tparam T The type of the elements stored in the heap. `T` must be movable, as it is
+ * moved into the heap in the insert method.
+ */
 template <typename T>
 class MergeableHeap
 {
