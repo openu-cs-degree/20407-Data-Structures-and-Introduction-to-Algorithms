@@ -107,6 +107,11 @@ public:
    */
   void sort()
   {
+    if (auto min = minimum(); !min)
+    {
+      return;
+    }
+
     MergeableHeap<T> temp{};
     while (auto min = extract_min())
     {

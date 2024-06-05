@@ -237,11 +237,17 @@ public:
    */
   void print() const override
   {
+    if (head == nullptr)
+    {
+      std::cout << "empty.";
+      return;
+    }
+
     for (Node *current = head; current != nullptr; current = current->next)
     {
       std::cout << current->key << ", ";
     }
-    std::cout << "\b\b.\n";
+    std::cout << "\b\b.";
   }
 
 private:

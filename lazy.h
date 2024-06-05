@@ -274,6 +274,12 @@ public:
    */
   void print() const
   {
+    if (head == nullptr)
+    {
+      std::cout << "empty.";
+      return;
+    }
+
     std::queue<Node *> q;
     if (head != nullptr)
     {
@@ -297,7 +303,7 @@ public:
       }
     }
 
-    std::cout << "\b\b.\n";
+    std::cout << "\b\b.";
   }
 
 private:
