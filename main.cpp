@@ -3,13 +3,15 @@
   @author Yehonatan Simian
   @date June 2024
 
+  \verbatim
   +-----------------------------------------------------------------------------------+
   |                        20407 - Data Structures - Maman 13                         |
   |                                                                                   |
   |                 "One must imagine Sisyphus happy." - Albert Camus                 |
   +-----------------------------------------------------------------------------------+
+  \endverbatim
 
-  @section DESCRIPTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  @section DESCRIPTION
 
   This project includes three implementations of a mergeable heap data structure:
   1. UnsortedLinkedHeap: A mergeable heap implemented using an unsorted linked list.
@@ -32,11 +34,11 @@
   @note My implementations of the mergeable heap are all constexpr-friendly, but do not
   handle runtime memory allocation failures for the sake of simplicity.
 
-  @section USAGE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  @section USAGE
 
   The program is very self explanatory. Better to run it and see for yourself!
 
-  @section COMPILATION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  @section COMPILATION
 
   To compile this project, I have used the following command:
 
@@ -44,7 +46,7 @@
 
   @note My implementations use C++23, and were tested using gcc 13.1.0.
 
-  @copyright All rights reserved (c) Yehonatan Simian 2024 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  @copyright All rights reserved (c) Yehonatan Simian 2024
 */
 
 #include <string>
@@ -190,15 +192,12 @@ public:
     ColorManager::set_color();
   }
 
-  void init()
-  {
-    print_welcome();
-    init_sorted();
-    init_heaps();
-  }
-
   void run()
   {
+    print_welcome(); // prints a welcome message
+    init_sorted();   // initializes the `sorted` private member
+    init_heaps();    // initializes the heaps from a file
+
     while (true)
     {
       auto heap = prompt_heap();
@@ -209,7 +208,8 @@ public:
       Action action = prompt_action();
       execute_action(*heap, action);
     }
-    print_goodbye();
+
+    print_goodbye(); // so long, farewell, auf wiedersehen, goodbye!
   }
 
 private:
@@ -646,6 +646,5 @@ private:
 int main()
 {
   Game game{};
-  game.init();
   game.run();
 }
