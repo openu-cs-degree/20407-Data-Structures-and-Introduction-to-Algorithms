@@ -177,34 +177,34 @@ public:
 
     // Initialize pointers
     Node *current = head;
-    Node *otherCurrent = other_heap.head;
+    Node *other_current = other_heap.head;
     Node *prev = nullptr;
 
     // Iterate through both lists
-    while (current != nullptr && otherCurrent != nullptr)
+    while (current != nullptr && other_current != nullptr)
     {
-      if (current->key < otherCurrent->key)
+      if (current->key < other_current->key)
       {
-        // Insert otherCurrent node after prev
+        // Insert other_current node after prev
         prev = current;
         current = current->next;
       }
       else
       {
-        // Insert otherCurrent node before current
-        Node *nextOtherCurrent = otherCurrent->next;
+        // Insert other_current node before current
+        Node *next_other_current = other_current->next;
         if (prev == nullptr)
         {
-          head = otherCurrent;
+          head = other_current;
         }
         else
         {
-          prev->next = otherCurrent;
+          prev->next = other_current;
         }
-        otherCurrent->prev = prev;
-        otherCurrent->next = current;
-        prev = otherCurrent;
-        otherCurrent = nextOtherCurrent;
+        other_current->prev = prev;
+        other_current->next = current;
+        prev = other_current;
+        other_current = next_other_current;
       }
     }
 
@@ -212,10 +212,10 @@ public:
     if (current == nullptr)
     {
       // There are remaining nodes in the other list
-      prev->next = otherCurrent;
-      if (otherCurrent != nullptr)
+      prev->next = other_current;
+      if (other_current != nullptr)
       {
-        otherCurrent->prev = prev;
+        other_current->prev = prev;
       }
     }
 

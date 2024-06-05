@@ -11,7 +11,7 @@
 
   @section DESCRIPTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  This file contains the implementation of a mergeable heap data structure, which is a
+  This file contains the interface of a mergeable heap data structure, which is a
   type of heap that supports the following operations:
   1. MAKE-HEAP creates a new (empty) heap.
   2. INSERT inserts a new element into the heap.
@@ -19,15 +19,8 @@
   4. EXTRACT-MIN removes and returns the element with the minimum key in the heap.
   5. UNION merges two heaps into a single heap.
 
-  The implementation is based on the Binomial Heap data structure:
-  https://en.wikipedia.org/wiki/Binomial_heap
-  Note that unlike the Binomial Heap in the link above, this implementation does not
-  support the DECREASE-KEY operation. In addition, the implementation is optimized such
-  that each operation runs in O(1) time complexity except for the EXTRACT-MIN operation
-  which runs in an amortized time complexity of O(log n).
-
-  @note The implementation is constexpr-friendly.
-  @note The implementation does not handle memory allocation failures for simplicity.
+  @note The interface is constexpr-friendly.
+  @note My implementation will not handle memory allocation failures for simplicity.
 
   @section COMPILATION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
