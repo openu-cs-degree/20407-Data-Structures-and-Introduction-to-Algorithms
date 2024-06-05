@@ -246,6 +246,25 @@ public:
     std::cout << "\b\b.";
   }
 
+  /**
+   * @brief Sorts the heap in ascending order.
+   *
+   * This method extracts the minimum key from the heap and until the heap is empty.
+   * The extracted keys are then inserted into a temporary heap, which is
+   * then merged back into the original heap.
+   *
+   * The time complexity of this operation is O(n log n), where n is the number of nodes
+   * in the heap. This is because the heap is sorted by extracting the minimum key n times,
+   * each of which takes O(log n) time, resulting in a total time complexity of O(n log n).
+   *
+   * @note The function could be O(1) because the heap is already sorted, but the requirement
+   * is to extract the minimum key n times, which is O(n log n).
+   */
+  void sort() override
+  {
+    this->MergeableHeap<T>::sort(SortedLinkedHeap<T>{});
+  }
+
 private:
   Node *head; ///< A pointer to the first node in the linked list.
 }; // class SortedLinkedHeap

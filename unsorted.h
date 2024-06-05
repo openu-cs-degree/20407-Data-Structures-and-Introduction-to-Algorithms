@@ -250,6 +250,22 @@ public:
     std::cout << "\b\b.";
   }
 
+  /**
+   * @brief Sorts the heap in ascending order.
+   *
+   * This method extracts the minimum key from the heap until the heap is empty.
+   * The extracted keys are then inserted into a temporary heap, which is
+   * then merged back into the original heap.
+   *
+   * The time complexity of this operation is O(n^2), where n is the number of nodes in the
+   * heap, because the minimum key must be extracted n times, and each extraction takes
+   * O(n) time.
+   */
+  void sort() override
+  {
+    this->MergeableHeap<T>::sort(UnsortedLinkedHeap<T>{});
+  }
+
 private:
   Node *head; ///< A pointer to the first node in the linked list.
   Node *tail; ///< A pointer to the last node in the linked list.

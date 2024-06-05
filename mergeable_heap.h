@@ -1,5 +1,5 @@
 /**
-  @file heap.h
+  @file mergeable_heap.h
   @author Yehonatan Simian
   @date May 2024
 
@@ -98,20 +98,21 @@ public:
    * Complexity depends on the implementation of the heap:
    * O(extract_min) * O(insert) + O(merge).
    */
-  void sort()
-  {
-    if (auto min = minimum(); !min)
-    {
-      return;
-    }
+  virtual void sort() = 0;
 
-    MergeableHeap<T> temp{};
-    while (auto min = extract_min())
+protected:
+  /**
+   * @brief Sorts the heap using a temporary heap.
+   *
+   * This function should be called by the `sort` function of the derived class
+   * in the following way: `this->MergeableHeap<T>::sort(DerivedHeap<T>{})`.
+   */
+  void sort(MergeableHeap<T> &&temp)
+  {
+    while (auto key = extract_min())
     {
-      std::cout << *min << ", ";
-      temp.insert(*min);
+      temp.insert(std::move(*key));
     }
-    std::cout << "\b\b.\n";
     merge(temp);
   }
 };

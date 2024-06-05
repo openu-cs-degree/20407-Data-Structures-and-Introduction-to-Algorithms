@@ -120,6 +120,7 @@ class Game
     minimum = 'm',
     print = 'p',
     merge = 'r',
+    sort = 's'
   };
 
 private:
@@ -397,12 +398,12 @@ private:
     print_lines<line1, line2>();
     do
     {
-      prompt("Choose an action: make-(h)eap, (i)nsert, (m)inimum, (e)xtract-min, me(r)ge, (p)rint ");
+      prompt("Choose an action: make-(h)eap, (i)nsert, (m)inimum, (e)xtract-min, me(r)ge, (p)rint, (s)ort ");
 
       if (input.size() != 1)
       {
         ColorManager::set_error();
-        std::cout << "please choose one letter from {h, i, m, e, r, p}.\n";
+        std::cout << "please choose one letter from {h, i, m, e, r, p, s}.\n";
         continue;
       }
 
@@ -420,10 +421,12 @@ private:
         return Action::merge;
       case 'p':
         return Action::print;
+      case 's':
+        return Action::sort;
       }
 
       ColorManager::set_error();
-      std::cout << "please choose a letter from {i, m, e, r, p}.\n";
+      std::cout << "please choose a letter from {h, i, m, e, r, p, s}.\n";
     } while (true);
   }
 
@@ -460,6 +463,11 @@ private:
     {
       execute_print(heap);
       return; // no need to print the heap twice
+    }
+    case Action::sort:
+    {
+      execute_sort(heap);
+      break;
     }
     default:
       std::unreachable();
@@ -575,6 +583,14 @@ private:
     ColorManager::set_text();
     heap->print();
     std::cout << '\n';
+  }
+
+  void execute_sort(Heap *heap)
+  {
+    static constexpr const char line1[] = "skidaddle skidoodle, your heap is now a noodle!";
+    print_lines<line1>();
+
+    heap->sort();
   }
 };
 

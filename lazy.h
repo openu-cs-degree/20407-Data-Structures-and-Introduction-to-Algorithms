@@ -306,6 +306,22 @@ public:
     std::cout << "\b\b.";
   }
 
+  /**
+   * @brief Sorts the heap in ascending order.
+   *
+   * This method extracts the minimum key from the heap until the heap is empty.
+   * The extracted keys are then inserted into a temporary heap, which is
+   * then merged back into the original heap.
+   *
+   * The time complexity of this operation is O(n log n), where n is the number of nodes
+   * in the heap. This is because the heap is sorted by extracting the minimum key n times,
+   * each of which takes O(log n) time, resulting in a total time complexity of O(n log n).
+   */
+  void sort() override
+  {
+    this->MergeableHeap<T>::sort(LazyBinomialHeap<T>{});
+  }
+
 private:
   Node *min;   ///< A pointer to the node with the minimum key in the heap.
   Node *head;  ///< A pointer to the first node in the root list of the heap.
