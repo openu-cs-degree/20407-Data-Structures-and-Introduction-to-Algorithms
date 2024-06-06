@@ -24,19 +24,18 @@ private:
   {
     T key;      ///< The key stored in the node.
     Node *next; ///< A pointer to the next node in the linked list.
-    Node *prev; ///< A pointer to the previous node in the linked list.
 
     /**
      * @brief Constructs a new node with the given key.
      *
      * @param key The key to store in the node. This key is moved into the node.
      */
-    constexpr Node(T key) : key(std::move(key)), next(nullptr), prev(nullptr) {}
+    constexpr Node(T key) : key(std::move(key)), next(nullptr) {}
 
     /**
      * @brief Default destructor.
      *
-     * The deletion of the next / prev nodes is handled by the heap.
+     * The deletion of the next node is handled by the heap.
      */
     constexpr ~Node() = default;
   };
@@ -135,10 +134,6 @@ public:
     }
 
     head = head->next;
-    if (head != nullptr) // the heap is not empty
-    {
-      head->prev = nullptr;
-    }
 
     T key = std::move(min_node->key); // extract the key before deleting the node
 
@@ -201,7 +196,6 @@ public:
         {
           prev->next = other_current;
         }
-        other_current->prev = prev;
         other_current->next = current;
         prev = other_current;
         other_current = next_other_current;
@@ -211,12 +205,7 @@ public:
     // Append remaining nodes from either list
     if (current == nullptr)
     {
-      // There are remaining nodes in the other list
       prev->next = other_current;
-      if (other_current != nullptr)
-      {
-        other_current->prev = prev;
-      }
     }
 
     other_heap.head = nullptr;
