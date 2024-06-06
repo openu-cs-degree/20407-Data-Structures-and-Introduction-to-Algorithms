@@ -167,7 +167,7 @@ private:
   {
     static constexpr size_t line_length = 56; // 60 including borders
     const size_t text_length = std::strlen(text);
-    // static_assert(text_length <= line_length, "Text exceeds line length!");
+    static_assert(text_length <= line_length, "Text exceeds line length!");
 
     ColorManager::set_border();
     std::cout << "* ";
@@ -227,8 +227,6 @@ private:
     static constexpr const char line2[] = "magical journey through the world of heaps.";
     static constexpr const char line3[] = "Our story involves two main characters: heap1 and heap2.";
     static constexpr const char line4[] = "Let's get to know our characters!";
-    static constexpr const char line5[] = "hint: you can terminate the program anytime by pressing";
-    static constexpr const char line6[] = "Ctrl+C.";
 
     print_begin();
     std::cout << "*       ";
@@ -236,7 +234,7 @@ private:
     std::cout << "~ Welcome to a world of wonder and " + magic() + " ~ ";
     ColorManager::set_border();
     std::cout << "       *\n";
-    print_lines<empty, line1, line2, empty, line3, line4, empty, line5, line6>(false);
+    print_lines<empty, line1, line2, empty, line3, line4>(false);
     print_end();
   }
 
