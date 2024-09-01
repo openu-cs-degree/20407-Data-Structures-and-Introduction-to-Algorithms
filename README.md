@@ -12,21 +12,22 @@ In computer science, a **mergeable heap** (also called a meldable heap) is an ab
 
 Mergeable heaps support five main operations: MAKE-HEAP, INSERT, MINIMUM, EXTRACT-MIN, and UNION. The MINIMUM and EXTRACT-MIN operations can be symmetrically replaced with MAXIMUM and EXTRACT-MAX. The operations' time complexity are described in the [Documentation](#documentation) section.
 
-The mergeable heap interface is declared in [mergeable_heap.h](https://github.com/yonisimian/mergeable-heap/blob/main/mergeable_heap.h).
+The mergeable heap interface is declared in [mergeable_heap.h](https://github.com/yonisimian/mergeable-heap/blob/main/src/mergeable_heap.h).
 
 ## Implementation
 
 The project includes the following implementations of the mergeable heap interface:
 
-- [**unsorted.h**](https://github.com/yonisimian/mergeable-heap/blob/main/unsorted.h): An implementation using **unsorted linked lists**.
-- [**sorted.h**](https://github.com/yonisimian/mergeable-heap/blob/main/sorted.h): An implementation using **sorted linked lists**.
-- [**lazy.h**](https://github.com/yonisimian/mergeable-heap/blob/main/lazy.h): An implementation using **lazy binomial heaps**.
+- [**unsorted.h**](https://github.com/yonisimian/mergeable-heap/blob/main/src/unsorted.h): An implementation using **unsorted linked lists**.
+- [**sorted.h**](https://github.com/yonisimian/mergeable-heap/blob/main/src/sorted.h): An implementation using **sorted linked lists**.
+- [**lazy.h**](https://github.com/yonisimian/mergeable-heap/blob/main/src/lazy.h): An implementation using **lazy binomial heaps**.
 
 Each implementation has been carefully designed to utilize modern C++ features, ensuring both performance and code clarity.
+In addition, each implementation has been tested with the tests found in [test.cc](https://github.com/yonisimian/mergeable-heap/blob/main/src/test.cc).
 
 ## User Interface
 
-A user interface is provided via the [game.hpp](https://github.com/yonisimian/mergeable-heap/blob/main/game.hpp) file. I tried to make it visually appealing and also fun to interact with 'cause I'm a based sigma that can't take those rizzless programmers who think professionalism and dullness go hand by hand.
+A user interface is provided via the [game.hpp](https://github.com/yonisimian/mergeable-heap/blob/main/src/game.hpp) file. I tried to make it visually appealing and also fun to interact with 'cause I'm a based sigma that can't take those rizzless programmers who think professionalism and dullness go hand by hand.
 
 To run the program, just include the game header and use the following code:
 
@@ -39,7 +40,7 @@ int main() {
 }
 ```
 
-The above code is available in [main.cpp](https://github.com/yonisimian/mergeable-heap/blob/main/main.cpp). It can be compiled using the following command:
+The above code is available in [main.cpp](https://github.com/yonisimian/mergeable-heap/blob/main/src/main.cpp). It can be compiled using the following command:
 
 ```sh
 g++ -std=c++23 -Wall -Wextra -Werror -Wpedantic -o main main.cpp
