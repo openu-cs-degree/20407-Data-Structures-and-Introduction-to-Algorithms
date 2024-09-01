@@ -5,79 +5,88 @@
 
 // g++ -std=c++2b -o test test.cc -lgtest -lpthread
 
-using Heap = SortedLinkedHeap<int>;
-
-TEST(MergeableHeapTest, Insert)
+template <typename T>
+class HeapTest : public ::testing::Test
 {
-  Heap h{};
+protected:
+  using Heap = T;
+};
+
+using HeapTypes = ::testing::Types<UnsortedLinkedHeap<int>, SortedLinkedHeap<int>, LazyBinomialHeap<int>>;
+
+TYPED_TEST_SUITE(HeapTest, HeapTypes);
+
+TYPED_TEST(HeapTest, Insert)
+{
+  typename TestFixture::Heap h{};
   h.insert(10);
   h.insert(5);
   h.insert(15);
-  EXPECT_EQ(h.minimum(), 5);
+  ASSERT_EQ(h.minimum(), 5);
 }
 
-TEST(MergeableHeapTest, ExtractMin)
+TYPED_TEST(HeapTest, ExtractMin)
 {
-  Heap h{};
+  typename TestFixture::Heap h{};
   h.insert(10);
   h.insert(5);
   h.insert(15);
-  EXPECT_EQ(h.extract_min(), 5);
-  EXPECT_EQ(h.extract_min(), 10);
-  EXPECT_EQ(h.extract_min(), 15);
-  EXPECT_EQ(h.extract_min(), std::nullopt);
+  ASSERT_EQ(h.extract_min(), 5);
+  ASSERT_EQ(h.extract_min(), 10);
+  ASSERT_EQ(h.extract_min(), 15);
+  ASSERT_EQ(h.extract_min(), std::nullopt);
 }
 
-TEST(MergeableHeapTest, Merge)
+TYPED_TEST(HeapTest, Merge)
 {
-  Heap h1{};
+  typename TestFixture::Heap h1{};
   h1.insert(10);
   h1.insert(5);
-  Heap h2{};
+  typename TestFixture::Heap h2{};
   h2.insert(15);
   h2.insert(20);
   h1.merge(h2);
-  EXPECT_EQ(h1.minimum(), 5);
-  EXPECT_EQ(h1.extract_min(), 5);
-  EXPECT_EQ(h1.extract_min(), 10);
-  EXPECT_EQ(h1.extract_min(), 15);
-  EXPECT_EQ(h1.extract_min(), 20);
-  EXPECT_EQ(h1.extract_min(), std::nullopt);
+  ASSERT_EQ(h1.minimum(), 5);
+  ASSERT_EQ(h1.extract_min(), 5);
+  ASSERT_EQ(h1.extract_min(), 10);
+  ASSERT_EQ(h1.extract_min(), 15);
+  ASSERT_EQ(h1.extract_min(), 20);
+  ASSERT_EQ(h1.extract_min(), std::nullopt);
 }
 
-TEST(MergeableHeapTest, EmptyHeap)
+TYPED_TEST(HeapTest, EmptyHeap)
 {
-  Heap h{};
-  EXPECT_EQ(h.minimum(), std::nullopt);
-  EXPECT_EQ(h.extract_min(), std::nullopt);
+  typename TestFixture::Heap h{};
+  ASSERT_EQ(h.minimum(), std::nullopt);
+  ASSERT_EQ(h.extract_min(), std::nullopt);
 }
 
-TEST(MergeableHeapTest, LargeHeap)
+TYPED_TEST(HeapTest, LargeHeap)
 {
-  Heap h{};
+  typename TestFixture::Heap h{};
   for (int i = 1000; i > 0; --i)
   {
     h.insert(i);
   }
-  EXPECT_EQ(h.minimum(), 1);
-  EXPECT_EQ(h.extract_min(), 1);
-  EXPECT_EQ(h.extract_min(), 2);
-  EXPECT_EQ(h.extract_min(), 3);
-  EXPECT_EQ(h.extract_min(), 4);
+  ASSERT_EQ(h.minimum(), 1);
+  ASSERT_EQ(h.extract_min(), 1);
+  ASSERT_EQ(h.extract_min(), 2);
+  ASSERT_EQ(h.extract_min(), 3);
+  ASSERT_EQ(h.extract_min(), 4);
 }
 
-TEST(MergeableHeapTest, MergeEmpty)
+TYPED_TEST(HeapTest, MergeEmpty)
 {
-  Heap h1{};
-  Heap h2{};
+  typename TestFixture::Heap h1{};
+  typename TestFixture::Heap h2{};
   h1.merge(h2);
-  EXPECT_EQ(h1.minimum(), std::nullopt);
-  EXPECT_EQ(h1.extract_min(), std::nullopt);
+  ASSERT_EQ(h1.minimum(), std::nullopt);
+  ASSERT_EQ(h1.extract_min(), std::nullopt);
 }
 
-TEST(MergeableHeapTest, ComplexTest)
+TYPED_TEST(HeapTest, ComplexTest)
 {
-  Heap h1{};
+  typename TestFixture::Heap h1{};
   h1.insert(10);
   h1.insert(5);
   h1.insert(15);
@@ -88,11 +97,11 @@ TEST(MergeableHeapTest, ComplexTest)
   h1.insert(40);
   h1.insert(45);
   h1.insert(50);
-  EXPECT_EQ(h1.minimum(), 5);
-  EXPECT_EQ(h1.extract_min(), 5);
-  EXPECT_EQ(h1.extract_min(), 10);
+  ASSERT_EQ(h1.minimum(), 5);
+  ASSERT_EQ(h1.extract_min(), 5);
+  ASSERT_EQ(h1.extract_min(), 10);
 
-  Heap h2{};
+  typename TestFixture::Heap h2{};
   h2.insert(1);
   h2.insert(2);
   h2.insert(3);
@@ -103,30 +112,30 @@ TEST(MergeableHeapTest, ComplexTest)
   h2.insert(18);
   h2.insert(9);
   h2.insert(10);
-  EXPECT_EQ(h2.minimum(), 1);
-  EXPECT_EQ(h2.extract_min(), 1);
-  EXPECT_EQ(h2.extract_min(), 2);
+  ASSERT_EQ(h2.minimum(), 1);
+  ASSERT_EQ(h2.extract_min(), 1);
+  ASSERT_EQ(h2.extract_min(), 2);
 
   h1.merge(h2);
 
-  EXPECT_EQ(h1.minimum(), 3);
-  EXPECT_EQ(h1.extract_min(), 3);
-  EXPECT_EQ(h1.extract_min(), 4);
-  EXPECT_EQ(h1.extract_min(), 6);
-  EXPECT_EQ(h1.extract_min(), 7);
-  EXPECT_EQ(h1.extract_min(), 9);
-  EXPECT_EQ(h1.extract_min(), 10);
-  EXPECT_EQ(h1.extract_min(), 15);
-  EXPECT_EQ(h1.extract_min(), 15);
-  EXPECT_EQ(h1.extract_min(), 18);
-  EXPECT_EQ(h1.extract_min(), 20);
-  EXPECT_EQ(h1.extract_min(), 25);
-  EXPECT_EQ(h1.extract_min(), 30);
-  EXPECT_EQ(h1.extract_min(), 35);
-  EXPECT_EQ(h1.extract_min(), 40);
-  EXPECT_EQ(h1.extract_min(), 45);
-  EXPECT_EQ(h1.extract_min(), 50);
-  EXPECT_EQ(h1.extract_min(), std::nullopt);
+  ASSERT_EQ(h1.minimum(), 3);
+  ASSERT_EQ(h1.extract_min(), 3);
+  ASSERT_EQ(h1.extract_min(), 4);
+  ASSERT_EQ(h1.extract_min(), 6);
+  ASSERT_EQ(h1.extract_min(), 7);
+  ASSERT_EQ(h1.extract_min(), 9);
+  ASSERT_EQ(h1.extract_min(), 10);
+  ASSERT_EQ(h1.extract_min(), 15);
+  ASSERT_EQ(h1.extract_min(), 15);
+  ASSERT_EQ(h1.extract_min(), 18);
+  ASSERT_EQ(h1.extract_min(), 20);
+  ASSERT_EQ(h1.extract_min(), 25);
+  ASSERT_EQ(h1.extract_min(), 30);
+  ASSERT_EQ(h1.extract_min(), 35);
+  ASSERT_EQ(h1.extract_min(), 40);
+  ASSERT_EQ(h1.extract_min(), 45);
+  ASSERT_EQ(h1.extract_min(), 50);
+  ASSERT_EQ(h1.extract_min(), std::nullopt);
 }
 
 int main(int argc, char **argv)
