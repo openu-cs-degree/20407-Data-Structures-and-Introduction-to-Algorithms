@@ -229,7 +229,7 @@ public:
    */
   constexpr void merge(MergeableHeap<T> &other) override
   {
-    LazyBinomialHeap<T> &other_heap = static_cast<LazyBinomialHeap<T> &>(other);
+    LazyBinomialHeap<T> &other_heap = dynamic_cast<LazyBinomialHeap<T> &>(other);
 
     if (min == nullptr || (other_heap.min != nullptr && other_heap.min->key < min->key))
     {
