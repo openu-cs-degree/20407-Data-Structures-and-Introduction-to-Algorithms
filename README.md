@@ -4,6 +4,8 @@ This project provides an implementation of the **mergeable heap** interface thro
 
 Additionally, a user interface is [provided](#user-interface) to facilitate interaction with these data structures.
 
+The project is my submission to Maman 13 which can be found in [חוברת הקורס](https://github.com/yonisimian/mergeable-heap/blob/main/חוברת%20הקורס.pdf).
+
 ## Mergeable Heaps
 
 In computer science, a **mergeable heap** (also called a meldable heap) is an abstract data type that supports a merge operation. Mergeable heaps are particularly useful in applications where dynamic sets of elements need to be managed efficiently, such as in Dijkstra's algorithm.
@@ -44,7 +46,6 @@ g++ -std=c++23 -Wall -Wextra -Werror -Wpedantic -o main main.cpp
 ```
 
 I recommend using GCC 13.1.0 or later versions for compilation.
-
 
 ## Documentation
 
