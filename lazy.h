@@ -8,6 +8,8 @@
 #include <optional>
 #include <cmath>
 #include <queue>
+#include <memory>
+#include <utility>
 
 /**
  * @class LazyBinomialHeap
@@ -47,10 +49,10 @@ private:
    */
   struct Node
   {
-    T key;         ///< The key stored in the node.
-    int degree;    ///< The degree of the binomial tree represented by this node.
-    Node *sibling; ///< A pointer to the node's sibling.
-    Node *child;   ///< A pointer to the node's first child.
+    T key;                         ///< The key stored in the node.
+    int degree;                    ///< The degree of the binomial tree represented by this node.
+    std::unique_ptr<Node> sibling; ///< A pointer to the node's sibling.
+    std::unique_ptr<Node> child;   ///< A pointer to the node's first child.
 
     /**
      * @brief Constructs a new node with the given key.
@@ -67,11 +69,7 @@ private:
      * This destructor deletes the node's sibling and child, if they exist. This will
      * recursively delete all nodes in the sibling and child subtrees.
      */
-    constexpr ~Node()
-    {
-      delete sibling;
-      delete child;
-    }
+    constexpr ~Node() = default;
   };
 
 private:
@@ -85,7 +83,7 @@ private:
    *
    * @param key The key to store in the heap. This key is moved into the heap.
    */
-  constexpr LazyBinomialHeap(T key) : min(new Node(std::move(key))), head(min), tail(min), size(1) {}
+  constexpr LazyBinomialHeap(T key) : head(std::make_unique<Node>(std::move(key))), tail(head.get()), min(head.get()), size(1) {}
 
 public:
   /**
@@ -96,7 +94,7 @@ public:
    *
    * The time complexity of this operation is O(1).
    */
-  constexpr LazyBinomialHeap() : min(nullptr), head(nullptr), tail(nullptr), size(0) {}
+  constexpr LazyBinomialHeap() noexcept : head(nullptr), tail(nullptr), min(nullptr), size(0) {}
 
   /**
    * @brief Destroys the heap.
@@ -106,10 +104,7 @@ public:
    *
    * The time complexity of this operation is O(n), where n is the number of nodes in the heap.
    */
-  constexpr ~LazyBinomialHeap()
-  {
-    delete head;
-  }
+  constexpr ~LazyBinomialHeap() = default;
 
   /**
    * @brief Inserts a key into the heap.
@@ -125,20 +120,21 @@ public:
    */
   constexpr void insert(T key) override
   {
-    Node *node = new Node(std::move(key));
+    std::unique_ptr<Node> node = std::make_unique<Node>(std::move(key));
 
     if (++size == 1) // the heap was empty
     {
-      head = tail = min = node;
+      head = std::move(node);
+      tail = min = head.get();
       return;
     }
 
-    tail->sibling = node; // concatenate node to the end of the root list
-    tail = node;          // update the tail pointer
+    tail->sibling = std::move(node); // concatenate node to the end of the root list
+    tail = tail->sibling.get();      // update the tail pointer
 
     if (key < min->key) // update the minimum if needed
     {
-      min = node;
+      min = tail;
     }
   }
 
@@ -179,7 +175,7 @@ public:
    */
   constexpr std::optional<T> extract_min() override
   {
-    Node *min_node = remove_min(); // O(log n)
+    auto min_node = remove_min(); // O(log n)
     if (min_node == nullptr)
     {
       return std::nullopt;
@@ -188,23 +184,22 @@ public:
     if (min_node->child != nullptr)
     {
       // concatenate the children of the min node to the end of the root list
-      Node *curr = min_node->child;
-      Node *first_child = curr;
+      Node *curr = min_node->child.get();
       Node *last_child = nullptr;
 
       while (curr)
       {
         last_child = curr;
-        curr = curr->sibling;
+        curr = curr->sibling.get();
       }
 
       if (head == nullptr)
       {
-        head = first_child;
+        head = std::move(min_node->child);
       }
       else
       {
-        tail->sibling = first_child;
+        tail->sibling = std::move(min_node->child);
       }
       tail = last_child;
     }
@@ -213,13 +208,7 @@ public:
 
     update_min(); // O(log n)
 
-    T key = std::move(min_node->key); // extract the key before deleting the node
-
-    min_node->child = nullptr;
-    min_node->sibling = nullptr;
-    delete min_node;
-
-    return key;
+    return std::move(min_node->key);
   }
 
   /**
@@ -249,18 +238,16 @@ public:
 
     if (head == nullptr)
     {
-      head = other_heap.head;
-      tail = other_heap.tail;
+      head = std::move(other_heap.head);
     }
     else if (other_heap.head != nullptr)
     {
-      tail->sibling = other_heap.head;
-      tail = other_heap.tail;
+      tail->sibling = std::move(other_heap.head);
     }
+    tail = other_heap.tail;
 
     size += other_heap.size;
 
-    other_heap.head = nullptr;
     other_heap.tail = nullptr;
     other_heap.size = 0;
   }
@@ -283,7 +270,7 @@ public:
     std::queue<Node *> q;
     if (head != nullptr)
     {
-      q.push(head);
+      q.push(head.get());
     }
 
     while (!q.empty())
@@ -293,11 +280,11 @@ public:
       std::cout << curr->key << ", ";
       if (curr->child != nullptr)
       {
-        Node *child = curr->child;
+        Node *child = curr->child.get();
         q.push(child);
         while (child->sibling != nullptr)
         {
-          child = child->sibling;
+          child = child->sibling.get();
           q.push(child);
         }
       }
@@ -323,10 +310,10 @@ public:
   }
 
 private:
-  Node *min;   ///< A pointer to the node with the minimum key in the heap.
-  Node *head;  ///< A pointer to the first node in the root list of the heap.
-  Node *tail;  ///< A pointer to the last node in the root list of the heap.
-  size_t size; ///< The number of nodes in the heap.
+  std::unique_ptr<Node> head; ///< A pointer to the first node in the root list of the heap.
+  Node *tail;                 ///< A pointer to the last node in the root list of the heap.
+  Node *min;                  ///< A pointer to the node with the minimum key in the heap.
+  size_t size;                ///< The number of nodes in the heap.
 
   /**
    * @brief Updates the minimum node pointer.
@@ -340,20 +327,20 @@ private:
    */
   constexpr void update_min()
   {
-    min = head;
+    min = head.get();
     if (min == nullptr)
     {
       return;
     }
 
-    Node *curr = head->sibling;
+    Node *curr = head->sibling.get();
     while (curr != nullptr)
     {
       if (curr->key < min->key)
       {
         min = curr;
       }
-      curr = curr->sibling;
+      curr = curr->sibling.get();
     }
   }
 
@@ -369,18 +356,18 @@ private:
    *
    * @return The minimum node, or `nullptr` if the heap is empty.
    */
-  constexpr Node *remove_min()
+  constexpr std::unique_ptr<Node> remove_min()
   {
     if (head == nullptr)
     {
       return nullptr;
     }
 
-    Node *curr = head;
+    Node *curr = head.get();
     Node *prev = curr;
-    Node *min_node = head;
+    Node *min_node = head.get();
     Node *prev_min = nullptr;
-    curr = curr->sibling;
+    curr = curr->sibling.get();
     while (curr != nullptr) // find the minimum node
     {
       if (curr->key < min_node->key)
@@ -389,17 +376,18 @@ private:
         prev_min = prev;
       }
       prev = curr;
-      curr = curr->sibling;
+      curr = curr->sibling.get();
     }
 
-    if (min_node == head)
+    auto min_node_owner = [&]() -> std::unique_ptr<Node>
     {
-      head = head->sibling;
-    }
-    else
-    {
-      prev_min->sibling = min_node->sibling;
-    }
+      if (min_node == head.get())
+      {
+        return std::exchange(head, std::move(head->sibling));
+      }
+      return std::exchange(prev_min->sibling, std::move(min_node->sibling));
+    }();
+
     if (min_node == tail)
     {
       tail = prev_min;
@@ -407,7 +395,7 @@ private:
 
     --size;
 
-    return min_node;
+    return min_node_owner;
   }
 
   /**
@@ -424,14 +412,14 @@ private:
    * @param tree2 The second tree to link.
    * @return The resulting tree after the link.
    */
-  constexpr Node *link(Node *tree1, Node *tree2) const
+  constexpr std::unique_ptr<Node> link(std::unique_ptr<Node> tree1, std::unique_ptr<Node> tree2) const
   {
     if (tree1->key > tree2->key)
     {
       std::swap(tree1, tree2);
     }
-    tree2->sibling = tree1->child;
-    tree1->child = tree2;
+    tree2->sibling = std::move(tree1->child);
+    tree1->child = std::move(tree2);
     tree1->degree += 1;
 
     return tree1;
@@ -450,18 +438,16 @@ private:
    *
    * @return A vector of vectors containing the nodes sorted by degree.
    */
-  constexpr std::vector<std::vector<Node *>> count_sort()
+  constexpr auto count_sort()
   {
     size_t max_degree = std::ceil(std::log2(size)) + 1; // O(1)
-    std::vector<std::vector<Node *>> count(max_degree);
+    std::vector<std::vector<std::unique_ptr<Node>>> count(max_degree);
 
-    for (Node *curr = head; curr != nullptr;)
+    for (std::unique_ptr<Node> curr = std::move(head); curr != nullptr;)
     {
-      Node *next = curr->sibling;
-      curr->sibling = nullptr;
+      std::unique_ptr<Node> next = std::move(curr->sibling);
       int degree = curr->degree;
-      count[degree].push_back(curr);
-      curr = next;
+      count[degree].push_back(std::exchange(curr, std::move(next)));
     }
 
     return count;
@@ -490,7 +476,7 @@ private:
       return;
     }
 
-    std::vector<std::vector<Node *>> count = count_sort(); // O(log n)
+    auto count = count_sort(); // O(log n)
 
     for (size_t i = 0; i < count.size(); ++i)
     {
@@ -501,32 +487,30 @@ private:
       }
       while (bucket.size() > 1) // link trees with the same degree
       {
-        Node *tree1 = bucket.back();
+        auto tree1 = std::move(bucket.back());
         bucket.pop_back();
-        Node *tree2 = bucket.back();
+        auto tree2 = std::move(bucket.back());
         bucket.pop_back();
-        Node *new_tree = link(tree1, tree2);
-        count[i + 1].push_back(new_tree);
+        count[i + 1].push_back(link(std::move(tree1), std::move(tree2)));
       }
     }
 
     head = nullptr;
     tail = nullptr;
-    for (size_t i = 0; i < count.size(); ++i)
+    for (size_t i = 0; i < count.size(); ++i) // concatenate the trees back to the root list
     {
-      // concatenate the trees back to the root list
       if (!count[i].empty())
       {
-        Node *tree = count[i].front();
         if (head == nullptr)
         {
-          head = tree;
+          head = std::move(count[i].front());
+          tail = head.get();
         }
         else
         {
-          tail->sibling = tree;
+          tail->sibling = std::move(count[i].front());
+          tail = tail->sibling.get();
         }
-        tail = tree;
       }
     }
   }
