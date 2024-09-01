@@ -61,7 +61,7 @@ private:
      *
      * @param key The key to store in the node. This key is moved into the node.
      */
-    constexpr Node(T key) : key(std::move(key)), degree(0), sibling(nullptr), child(nullptr) {}
+    constexpr Node(T key) noexcept(std::is_nothrow_move_constructible_v<T>) : key(std::move(key)), degree(0), sibling(nullptr), child(nullptr) {}
 
     /**
      * @brief Destroys the node.
@@ -150,7 +150,7 @@ public:
    *
    * @return A reference to the minimum key, or `std::nullopt` if the heap is empty.
    */
-  constexpr std::optional<std::reference_wrapper<const T>> minimum() const override
+  constexpr std::optional<std::reference_wrapper<const T>> minimum() const noexcept override
   {
     if (min == nullptr)
     {
@@ -325,7 +325,7 @@ private:
    * the heap. This is because the `min` pointer is updated by iterating over the root list,
    * which is logarithmic in the number of nodes in the heap.
    */
-  constexpr void update_min()
+  constexpr void update_min() noexcept
   {
     min = head.get();
     if (min == nullptr)
