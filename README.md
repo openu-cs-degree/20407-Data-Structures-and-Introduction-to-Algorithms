@@ -1,10 +1,11 @@
 # Overview
 
 This project provides an implementation of the **mergeable heap** interface through [three](#implementation) distinct approaches, each crafted with attention to detail and professionalism. The implementations leverage modern C++ features such as [compile-time heap allocations](http://wg21.link/P0784R1) and [constexpr virtual functions](https://wg21.link/P1064) to ensure efficiency and maintainability.
-
 Additionally, a user interface is [provided](#user-interface) to facilitate interaction with these data structures.
 
-The project is my submission to Maman 13 which can be found in [חוברת הקורס](https://github.com/yonisimian/mergeable-heap/blob/main/חוברת%20הקורס.pdf).
+The project is my submission to Maman 13 which can be found in [חוברת הקורס](https://github.com/yonisimian/mergeable-heap/blob/main/mamans/חוברת%20הקורס.pdf) of semester 2024b.
+In addition, I have provided my submissions to the other assignments (only Maman 11 and Maman 12, i.e., I did not submit Maman 14).
+All three submissions can be found in the [mamans](https://github.com/yonisimian/mergeable-heap/blob/main/mamans) folder.
 
 ## Mergeable Heaps
 
