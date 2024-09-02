@@ -3,9 +3,9 @@
 This project provides an implementation of the **mergeable heap** interface through [three](#implementation) distinct approaches, each crafted with attention to detail and professionalism. The implementations leverage modern C++ features such as [compile-time heap allocations](http://wg21.link/P0784R1) and [constexpr virtual functions](https://wg21.link/P1064) to ensure efficiency and maintainability.
 Additionally, a user interface is [provided](#user-interface) to facilitate interaction with these data structures.
 
-The project is my submission to Maman 13 which can be found in [חוברת הקורס](https://github.com/yonisimian/mergeable-heap/blob/main/mamans/חוברת%20הקורס.pdf) of semester 2024b.
+The project is my submission to Maman 13 which can be found in [חוברת הקורס](https://github.com/yonisimian-cs-degree/20407-Data-Structures-and-Introduction-to-Algorithms/tree/main/mamans/חוברת%20הקורס.pdf) of semester 2024b.
 In addition, I have provided my submissions to the other assignments (only Maman 11 and Maman 12, i.e., I did not submit Maman 14).
-All three submissions can be found in the [mamans](https://github.com/yonisimian/mergeable-heap/blob/main/mamans) folder.
+All three submissions can be found in the [mamans](https://github.com/yonisimian-cs-degree/20407-Data-Structures-and-Introduction-to-Algorithms/tree/main/mamans) folder.
 
 ## Mergeable Heaps
 
@@ -13,22 +13,22 @@ In computer science, a **mergeable heap** (also called a meldable heap) is an ab
 
 Mergeable heaps support five main operations: MAKE-HEAP, INSERT, MINIMUM, EXTRACT-MIN, and UNION. The MINIMUM and EXTRACT-MIN operations can be symmetrically replaced with MAXIMUM and EXTRACT-MAX. The operations' time complexity are described in the [Documentation](#documentation) section.
 
-The mergeable heap interface is declared in [mergeable_heap.h](https://github.com/yonisimian/mergeable-heap/blob/main/src/mergeable_heap.h).
+The mergeable heap interface is declared in [mergeable_heap.h](https://github.com/yonisimian-cs-degree/20407-Data-Structures-and-Introduction-to-Algorithms/tree/main/src/mergeable_heap.h).
 
 ## Implementation
 
 The project includes the following implementations of the mergeable heap interface:
 
-- [**unsorted.h**](https://github.com/yonisimian/mergeable-heap/blob/main/src/unsorted.h): An implementation using **unsorted linked lists**.
-- [**sorted.h**](https://github.com/yonisimian/mergeable-heap/blob/main/src/sorted.h): An implementation using **sorted linked lists**.
-- [**lazy.h**](https://github.com/yonisimian/mergeable-heap/blob/main/src/lazy.h): An implementation using **lazy binomial heaps**.
+- [**unsorted.h**](https://github.com/yonisimian-cs-degree/20407-Data-Structures-and-Introduction-to-Algorithms/tree/main/src/unsorted.h): An implementation using **unsorted linked lists**.
+- [**sorted.h**](https://github.com/yonisimian-cs-degree/20407-Data-Structures-and-Introduction-to-Algorithms/tree/main/src/sorted.h): An implementation using **sorted linked lists**.
+- [**lazy.h**](https://github.com/yonisimian-cs-degree/20407-Data-Structures-and-Introduction-to-Algorithms/tree/main/src/lazy.h): An implementation using **lazy binomial heaps**.
 
 Each implementation has been carefully designed to utilize modern C++ features, ensuring both performance and code clarity.
-In addition, each implementation has been tested with the tests found in [test.cc](https://github.com/yonisimian/mergeable-heap/blob/main/src/test.cc).
+In addition, each implementation has been tested with the tests found in [test.cc](https://github.com/yonisimian-cs-degree/20407-Data-Structures-and-Introduction-to-Algorithms/tree/main/src/test.cc).
 
 ## User Interface
 
-A user interface is provided via the [game.hpp](https://github.com/yonisimian/mergeable-heap/blob/main/src/game.hpp) file. I tried to make it visually appealing and also fun to interact with 'cause I'm a based sigma that can't take those rizzless programmers who think professionalism and dullness go hand by hand.
+A user interface is provided via the [game.hpp](https://github.com/yonisimian-cs-degree/20407-Data-Structures-and-Introduction-to-Algorithms/tree/main/src/game.hpp) file. I tried to make it visually appealing and also fun to interact with 'cause I'm a based sigma that can't take those rizzless programmers who think professionalism and dullness go hand by hand.
 
 To run the program, just include the game header and use the following code:
 
@@ -41,7 +41,7 @@ int main() {
 }
 ```
 
-The above code is available in [main.cpp](https://github.com/yonisimian/mergeable-heap/blob/main/src/main.cpp). It can be compiled using the following command:
+The above code is available in [main.cpp](https://github.com/yonisimian-cs-degree/20407-Data-Structures-and-Introduction-to-Algorithms/tree/main/src/main.cpp). It can be compiled using the following command:
 
 ```sh
 g++ -std=c++23 -Wall -Wextra -Werror -Wpedantic -o main main.cpp
@@ -53,8 +53,8 @@ I recommend using GCC 13.1.0 or later versions for compilation.
 
 The code files are thoroughly documented. In addition to the in-code comments, Doxygen-generated documentation is available:
 
-- [docs.pdf](https://github.com/yonisimian/mergeable-heap/blob/main/docs.pdf)
-- [docs-compact.pdf](https://github.com/yonisimian/mergeable-heap/blob/main/docs-compact.pdf)
+- [docs.pdf](https://github.com/yonisimian-cs-degree/20407-Data-Structures-and-Introduction-to-Algorithms/tree/main/docs.pdf)
+- [docs-compact.pdf](https://github.com/yonisimian-cs-degree/20407-Data-Structures-and-Introduction-to-Algorithms/tree/main/docs-compact.pdf)
 
 Below is a complexity table that summarizes the performance characteristics of the different heap implementations:
 
@@ -70,7 +70,7 @@ Below is a complexity table that summarizes the performance characteristics of t
 
 ## Example
 
-The file [example.cpp](https://github.com/yonisimian/mergeable-heap/blob/main/example.cpp) provides a concise example demonstrating the usage of the mergeable heap, as well as a proof of the implementation's efficiency.
+The file [example.cpp](https://github.com/yonisimian-cs-degree/20407-Data-Structures-and-Introduction-to-Algorithms/tree/main/example.cpp) provides a concise example demonstrating the usage of the mergeable heap, as well as a proof of the implementation's efficiency.
 
 By utilizing the mergeable heap in a `constexpr` context, all heap allocations and deallocations are performed at compile-time, resulting in optimized performance and reduced runtime overhead.
 
